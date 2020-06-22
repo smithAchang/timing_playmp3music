@@ -51,7 +51,11 @@ def play(start):
                     mixer.music.load(paths[cur].encode("utf-8")) #支持中文文件名
                     mixer.music.play()
                 else:
+                    print("play reach the end! stop event:{}".format(event.type))
                     break;
+            else:
+                #print("play event: {} ".format(event.type))
+                pass    
 
         print("pygame quit...")            
         pygame.quit()
