@@ -52,14 +52,14 @@ def play(start):
                     mixer.music.play()
                 else:
                     break;
-                    
+
         print("pygame quit...")            
         pygame.quit()
  
 
-def istiming(now.hour,now.minute,timing_list):
+def istiming(now_hour,now_minute,timing_list):
     for timing in timing_list:
-        if now.hour == timing[0] and now.minute == timing[1]:
+        if now_hour == timing[0] and now_minute == timing[1]:
             return True
 
     return False
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     while arg_loop < len(sys.argv) :
         
         parse_args = sys.argv[arg_loop].split(':')
-        timing_list.append((int(parse_args[0]),int(parse_args[1]))
+        timing_list.append((int(parse_args[0]),int(parse_args[1])))
 
         arg_loop += 1
     
