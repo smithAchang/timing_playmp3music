@@ -1,8 +1,7 @@
 #!/usr/bin/python3 
 '''
-这是多行注释，用三个单引号
-这是多行注释，用三个单引号 
-这是多行注释，用三个单引号
+ + support timing play mp3 music every day
+
 '''
 
 import datetime
@@ -12,10 +11,13 @@ import time
 import pygame
 from pygame import mixer
 from pygame.locals import USEREVENT
- 
- 
+import multiprocessing as mp
+
+
+
+# copy codes from other 
 STOPEVENT     = USEREVENT + 1 #音乐停止事件
-timing_hour   =   9 # 时间
+timing_hour   = 9 # 时间
 timing_minute = 26 # 分钟
 play_long     = 60 * 10  # 播放时长
 timing_list   = []
@@ -26,11 +28,15 @@ def play(start):
  
     def ismp3(path):
         return path.endswith(".mp3")
+
     paths = list(filter(ismp3, paths)) #保留mp3文件
  
     if len(paths) > 0:
+
         cur = 0
+
         mixer.init()
+        # pygame must be inited after mixer
         pygame.init()
 
         mixer.music.set_endevent(STOPEVENT) #设置音乐停止事件
@@ -57,7 +63,8 @@ def play(start):
                 #print("play event: {} ".format(event.type))
                 pass    
 
-        print("pygame quit...")            
+        print("pygame quit...")
+        mixer.quit()            
         pygame.quit()
  
 
@@ -73,9 +80,20 @@ def istiming(now_hour,now_minute,timing_list):
 def detect():
     while True:
         now = datetime.datetime.now()
+
+        # judging hour and minute every day is ok,for mostly mp3 music will play more than one minute
         if istiming(now.hour , now.minute , timing_list):
             print("begin to play:{}".format(now))
-            play(now)
+   
+            #pygame 1.9 has bug when playing the same music mulpti-times
+            #the second play will immediately reach the end
+            #use childprocess to avoid the case
+            playmusic_childprocess = mp.Process(target=play,args=(now,))
+            playmusic_childprocess.start()
+            playmusic_childprocess.join()
+ 
+
+          
         else:
             print("play settings:{} ; curTime hour:{},minute:{}".format(timing_list,now.hour,now.minute))
             time.sleep(1)
@@ -95,4 +113,4 @@ if __name__ == '__main__':
     # begin to loop
     detect()
   else:
-    print("Usage:python3 playmusic.py 10:30 ...")
+    print("Usage:python3 playmusic.py 10:30 [...]")
